@@ -15,12 +15,16 @@ app = FastAPI(
 allowed_origins = [
     "http://localhost:3000",
     "http://localhost:5173",
-    settings.FRONTEND_URL,  # Add production frontend URL
 ]
 
-# Add any Vercel preview deployments
+# Add production frontend URL
 if settings.FRONTEND_URL:
     allowed_origins.append(settings.FRONTEND_URL)
+    # Also allow without trailing slash
+    if settings.FRONTEND_URL.endswith('/'):
+        allowed_origins.append(settings.FRONTEND_URL.rstrip('/'))
+    else:
+        allowed_origins.append(settings.FRONTEND_URL + '/')
 
 app.add_middleware(
     CORSMiddleware,
