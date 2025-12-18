@@ -20,9 +20,8 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int
     
-    # AI APIs
-    OPENAI_API_KEY: str
-    ANTHROPIC_API_KEY: Optional[str] = None
+    # AI API
+    ANTHROPIC_API_KEY: str  # Required - app uses Claude
     
     # Authentication
     SECRET_KEY: str
