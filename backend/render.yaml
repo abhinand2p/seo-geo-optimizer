@@ -1,0 +1,62 @@
+services:
+  # Backend API Service
+  - type: web
+    name: seo-geo-optimizer-api
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: POSTGRES_SERVER
+        fromDatabase:
+          name: seo-geo-optimizer-db
+          property: host
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: seo-geo-optimizer-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: seo-geo-optimizer-db
+          property: password
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: seo-geo-optimizer-db
+          property: database
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        value: 6379
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: FRONTEND_URL
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+
+databases:
+  - name: seo-geo-optimizer-db
+    databaseName: seo_geo_db
+    user: seo_user
+    plan: free
