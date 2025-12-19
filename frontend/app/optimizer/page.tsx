@@ -4,8 +4,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Zap, Sparkles, Loader2, AlertCircle, Copy, Check, TrendingUp, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api`;
+import { API_BASE_URL } from '@/lib/config';
 
 interface AnalysisResult {
   metrics: {

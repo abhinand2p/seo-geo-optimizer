@@ -4,8 +4,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Search, Sparkles, TrendingUp, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api`;
+import { API_BASE_URL } from '@/lib/config';
 
 interface KeywordAnalysis {
   keyword: string;
