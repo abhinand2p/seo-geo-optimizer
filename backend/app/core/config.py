@@ -16,9 +16,9 @@ class Settings(BaseSettings):
     def DATABASE_URL(self) -> str:
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}/{self.POSTGRES_DB}"
     
-    # Redis
-    REDIS_HOST: str
-    REDIS_PORT: int
+    # Redis (Optional - not currently used)
+    REDIS_HOST: Optional[str] = None
+    REDIS_PORT: Optional[int] = 6379
     
     # AI API
     ANTHROPIC_API_KEY: str  # Required - app uses Claude
