@@ -72,9 +72,14 @@ async def generate_keywords(request: KeywordRequest):
             analysis=analysis,
             total_keywords=total_count
         )
-    
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        import traceback
+        error_detail = str(e) or "Unknown error"
+        print(f"❌ Error in generate_keywords: {error_detail}")
+        print(f"Error type: {type(e).__name__}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error: {error_detail}")
 
 @router.post("/expand/{keyword}")
 async def expand_keyword(keyword: str, variations: int = 5):
