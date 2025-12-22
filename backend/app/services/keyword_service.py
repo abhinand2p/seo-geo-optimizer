@@ -5,7 +5,13 @@ from app.core.config import settings
 
 class KeywordService:
     def __init__(self):
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        print(f"🔧 Initializing KeywordService with API key: {settings.ANTHROPIC_API_KEY[:20]}...")
+        try:
+            self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+            print("✅ Anthropic client initialized successfully")
+        except Exception as e:
+            print(f"❌ Failed to initialize Anthropic client: {e}")
+            raise
     
     async def generate_seed_keywords(
         self, 
