@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api import keywords, content, auth  # Add auth import
+from app.api import keywords, content, auth, site_audit  # Add auth and site_audit imports
 from app.core.database import init_db
 
 # Create FastAPI app
@@ -43,7 +43,8 @@ def on_startup():
 # Include routers
 app.include_router(keywords.router, prefix="/api/keywords", tags=["Keywords"])
 app.include_router(content.router, prefix="/api/content", tags=["Content"])
-app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])  # Add this
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(site_audit.router, prefix="/api/site-audit", tags=["Site Audit"])
 
 @app.get("/")
 async def root():

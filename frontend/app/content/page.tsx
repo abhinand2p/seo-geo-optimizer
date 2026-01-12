@@ -142,13 +142,19 @@ export default function ContentGenerator() {
       <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex gap-3">
-  <Link 
+  <Link
     href="/"
-    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
   >
-    ← Keywords
+    Keywords
   </Link>
-  <Link 
+  <Link
+    href="/audit"
+    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+  >
+    Site Audit
+  </Link>
+  <Link
     href="/optimizer"
     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium"
   >

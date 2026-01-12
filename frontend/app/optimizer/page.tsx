@@ -155,15 +155,21 @@ export default function ContentOptimizer() {
               </div>
             </div>
             <div className="flex gap-3">
-              <Link 
+              <Link
                 href="/"
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
               >
-                ← Keywords
+                Keywords
               </Link>
-              <Link 
+              <Link
+                href="/audit"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+              >
+                Site Audit
+              </Link>
+              <Link
                 href="/content"
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium"
               >
                 Content Gen
               </Link>
