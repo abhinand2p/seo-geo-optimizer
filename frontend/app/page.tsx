@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Sparkles, Search, Zap, BarChart3, TrendingUp, ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function HomePage() {
+  // Landing page with Site Audit feature
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header/Navigation */}
