@@ -9,7 +9,7 @@ class EmailService:
         """Send email via SMTP"""
         
         if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
-            print("⚠️ Email not configured, skipping email send")
+            print("Email not configured, skipping email send")
             print(f"Would send to {to_email}: {subject}")
             print(f"Body: {body}")
             return
@@ -33,9 +33,9 @@ class EmailService:
                 password=settings.SMTP_PASSWORD,
                 start_tls=True,
             )
-            print(f"✅ Email sent to {to_email}")
+            print(f"Email sent to {to_email}")
         except Exception as e:
-            print(f"❌ Failed to send email: {e}")
+            print(f"Failed to send email: {e}")
             raise
     
     @staticmethod

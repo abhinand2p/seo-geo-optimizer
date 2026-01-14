@@ -1,5 +1,7 @@
 import aiohttp
 import asyncio
+import ssl
+import certifi
 from typing import List, Dict, Optional
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
@@ -113,7 +115,18 @@ class SiteAuditService:
         to_visit = [start_url]
         base_domain = urlparse(start_url).netloc
 
-        async with aiohttp.ClientSession() as session:
+        # Create SSL context with certifi certificates
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+
+        # Headers to mimic a real browser
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+        }
+
+        async with aiohttp.ClientSession(connector=connector, headers=headers) as session:
             while to_visit and len(pages) < max_pages:
                 url = to_visit.pop(0)
 
@@ -124,10 +137,11 @@ class SiteAuditService:
 
                 try:
                     start_time = time.time()
-                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=15), allow_redirects=True) as response:
                         load_time = (time.time() - start_time) * 1000
 
-                        if response.status == 200:
+                        # Accept 200 and 403 (some sites return 403 but still have content)
+                        if response.status in [200, 403]:
                             html = await response.text()
                             soup = BeautifulSoup(html, 'html.parser')
 

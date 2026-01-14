@@ -76,7 +76,7 @@ async def generate_keywords(request: KeywordRequest):
     except Exception as e:
         import traceback
         error_detail = str(e) or "Unknown error"
-        print(f"❌ Error in generate_keywords: {error_detail}")
+        print(f"Error in generate_keywords: {error_detail}")
         print(f"Error type: {type(e).__name__}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error: {error_detail}")

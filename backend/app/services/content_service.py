@@ -657,7 +657,7 @@ Generate ONLY the optimized content. No explanations."""
             }
         
         except Exception as e:
-            print(f"❌ Error optimizing for SEO: {e}")
+            print(f"Error optimizing for SEO: {e}")
             import traceback
             traceback.print_exc()
             return {
@@ -756,7 +756,7 @@ Generate ONLY the optimized content. Do not include explanations."""
             }
         
         except Exception as e:
-            print(f"❌ Error optimizing for GEO: {e}")
+            print(f"Error optimizing for GEO: {e}")
             import traceback
             traceback.print_exc()
             return {

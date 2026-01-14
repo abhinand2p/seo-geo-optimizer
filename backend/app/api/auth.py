@@ -58,27 +58,27 @@ async def get_current_user(
 async def register(user_data: UserRegister, db: Session = Depends(get_db)):
     """Register new user"""
     print("="*50)
-    print("🟢 REGISTER ENDPOINT HIT")
+    print("REGISTER ENDPOINT HIT")
     print(f"Email: {user_data.email}")
     print(f"Password length: {len(user_data.password)}")
     print("="*50)
     
     try:
         auth_service = AuthService(db)
-        print("✅ Auth service created")
+        print("Auth service created")
         
         user = auth_service.create_user(
             email=user_data.email,
             password=user_data.password,
             full_name=user_data.full_name
         )
-        print(f"✅ User created with ID: {user.id}")
+        print(f"User created with ID: {user.id}")
         
         otp_code = await auth_service.create_otp(user.id, purpose="verification")
-        print(f"✅ OTP generated: {otp_code}")
+        print(f"OTP generated: {otp_code}")
         
         await EmailService.send_otp_email(user.email, otp_code, purpose="email verification")
-        print("✅ Email service called")
+        print("Email service called")
         
         return MessageResponse(
             message="Registration successful! Please check your email for verification code.",
@@ -86,10 +86,10 @@ async def register(user_data: UserRegister, db: Session = Depends(get_db)):
         )
     
     except Exception as e:
-        print(f"❌❌❌ ERROR: {type(e).__name__}")
-        print(f"❌❌❌ Message: {str(e)}")
+        print(f"ERROR: {type(e).__name__}")
+        print(f"Message: {str(e)}")
         import traceback
-        print("❌❌❌ Full traceback:")
+        print("Full traceback:")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
     
