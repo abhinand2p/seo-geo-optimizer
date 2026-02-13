@@ -2,8 +2,12 @@
 
 import { useState } from 'react';
 import axios from 'axios';
-import { Zap, Sparkles, Loader2, AlertCircle, Copy, Check, TrendingUp, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+import {
+  Zap, Sparkles, Loader2, AlertCircle, Copy, Check,
+  TrendingUp, ArrowRight, Menu, X
+} from 'lucide-react';
 import { API_BASE_URL } from '@/lib/config';
 
 interface AnalysisResult {
@@ -52,6 +56,7 @@ export default function ContentOptimizer() {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState<'seo' | 'geo' | null>(null);
   const [activeTab, setActiveTab] = useState<'seo' | 'geo'>('seo');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const analyzeContent = async () => {
     if (!content.trim()) {
@@ -64,15 +69,15 @@ export default function ContentOptimizer() {
     setAnalysis(null);
 
     try {
-      const keywordList = keywords.trim() 
-        ? keywords.split(',').map(k => k.trim()).filter(k => k)
+      const keywordList = keywords.trim()
+        ? keywords.split(',').map((k) => k.trim()).filter((k) => k)
         : null;
 
       const response = await axios.post(`${API_BASE_URL}/content/analyze`, {
         content: content.trim(),
-        target_keywords: keywordList
+        target_keywords: keywordList,
       });
-      
+
       setAnalysis(response.data);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to analyze content. Please try again.');
@@ -93,16 +98,16 @@ export default function ContentOptimizer() {
     setResult(null);
 
     try {
-      const keywordList = keywords.split(',').map(k => k.trim()).filter(k => k);
+      const keywordList = keywords.split(',').map((k) => k.trim()).filter((k) => k);
 
       const response = await axios.post(`${API_BASE_URL}/content/optimize`, {
         content: content.trim(),
         target_keywords: keywordList,
         optimization_type: optimizationType,
         preserve_meaning: preserveMeaning,
-        tone
+        tone,
       });
-      
+
       setResult(response.data);
       if (response.data.seo_optimized) {
         setActiveTab('seo');
@@ -128,95 +133,147 @@ export default function ContentOptimizer() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'high': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'medium': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+      case 'low': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      default: return 'bg-white/10 text-gray-400 border-white/20';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-teal-50 to-cyan-50">
+    <div className="min-h-screen bg-[#050505]">
+      {/* Background Grid */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/10 rounded-full blur-[150px]" />
+      </div>
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <header className="relative z-10 border-b border-white/10 bg-[#050505]/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg">
-                <Zap className="w-8 h-8 text-white" />
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center group-hover:bg-emerald-400 transition-colors">
+                <Sparkles className="w-5 h-5 text-black" />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Content Optimizer
-                </h1>
-                <p className="text-sm text-gray-600 mt-1">
-                  Transform Your Content into SEO & GEO Optimized Masterpieces
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <Link
-                href="/"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
-              >
+              <span className="text-lg font-semibold" style={{ color: '#ffffff' }}>
+                SEO<span style={{ color: '#34d399' }}>&</span>GEO
+              </span>
+            </Link>
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-6">
+              <Link href="/" className="text-sm hover:text-emerald-400 transition-colors" style={{ color: '#d1d5db' }}>
+                Home
+              </Link>
+              <Link href="/keywords" className="text-sm hover:text-emerald-400 transition-colors" style={{ color: '#d1d5db' }}>
                 Keywords
               </Link>
-              <Link
-                href="/audit"
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
-              >
+              <Link href="/content" className="text-sm hover:text-emerald-400 transition-colors" style={{ color: '#d1d5db' }}>
+                Content
+              </Link>
+              <Link href="/optimizer" className="text-sm transition-colors" style={{ color: '#34d399' }}>
+                Optimizer
+              </Link>
+              <Link href="/audit" className="text-sm px-4 py-2 bg-emerald-500 text-black font-medium rounded-lg hover:bg-emerald-400 transition-colors">
                 Site Audit
               </Link>
-              <Link
-                href="/content"
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium"
-              >
-                Content Gen
+            </nav>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden w-10 h-10 flex items-center justify-center"
+              style={{ color: '#ffffff' }}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 space-y-3 border-t border-white/10 mt-4">
+              <Link href="/" className="block py-2" style={{ color: '#ffffff' }}>Home</Link>
+              <Link href="/keywords" className="block py-2" style={{ color: '#ffffff' }}>Keywords</Link>
+              <Link href="/content" className="block py-2" style={{ color: '#ffffff' }}>Content</Link>
+              <Link href="/optimizer" className="block py-2" style={{ color: '#34d399' }}>Optimizer</Link>
+              <Link href="/audit" className="block py-2 px-4 bg-emerald-500 text-black font-medium rounded-lg text-center">
+                Site Audit
               </Link>
             </div>
-          </div>
+          )}
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Title */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+              <Zap className="w-6 h-6 text-emerald-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#ffffff' }}>
+                Content Optimizer
+              </h1>
+              <p className="text-sm" style={{ color: '#9ca3af' }}>
+                Transform your content into SEO & GEO optimized masterpieces
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
             {/* Input Form */}
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-green-600" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-[#111111] rounded-2xl border border-white/10 p-6 md:p-8"
+            >
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2" style={{ color: '#ffffff' }}>
+                <Sparkles className="w-5 h-5 text-emerald-400" />
                 Your Content
               </h2>
 
               {/* Content Input */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="mb-5">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#d1d5db' }}>
                   Paste Your Content *
                 </label>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Paste your existing content here... It can be rough, we'll make it amazing!"
-                  rows={10}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition resize-none"
+                  placeholder="Paste your existing content here..."
+                  rows={8}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition resize-none placeholder-gray-500"
+                  style={{ color: '#ffffff' }}
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  {content.length} characters, {content.trim().split(/\s+/).filter(w => w).length} words
+                <p className="text-xs mt-1" style={{ color: '#6b7280' }}>
+                  {content.length} characters, {content.trim().split(/\s+/).filter((w) => w).length} words
                 </p>
               </div>
 
               {/* Keywords */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="mb-5">
+                <label className="block text-sm font-medium mb-2" style={{ color: '#d1d5db' }}>
                   Target Keywords (comma-separated) *
                 </label>
                 <input
                   type="text"
                   value={keywords}
                   onChange={(e) => setKeywords(e.target.value)}
-                  placeholder="e.g., AI marketing, automation tools, digital strategy"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                  placeholder="e.g., AI marketing, automation tools"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition placeholder-gray-500"
+                  style={{ color: '#ffffff' }}
                 />
               </div>
 
@@ -224,19 +281,20 @@ export default function ContentOptimizer() {
               <div className="space-y-4 mb-6">
                 {/* Optimization Type */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#d1d5db' }}>
                     Optimization Type
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     {['seo', 'geo', 'both'].map((type) => (
                       <button
                         key={type}
                         onClick={() => setOptimizationType(type)}
-                        className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                        className={`px-4 py-2.5 rounded-lg font-medium transition-all ${
                           optimizationType === type
-                            ? 'bg-green-600 text-white shadow-lg'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-emerald-500 text-black'
+                            : 'bg-white/5 border border-white/10 hover:bg-white/10'
                         }`}
+                        style={{ color: optimizationType === type ? undefined : '#ffffff' }}
                       >
                         {type.toUpperCase()}
                       </button>
@@ -246,19 +304,20 @@ export default function ContentOptimizer() {
 
                 {/* Tone */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#d1d5db' }}>
                     Tone
                   </label>
                   <select
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition"
+                    style={{ color: '#ffffff' }}
                   >
-                    <option value="neutral">Neutral</option>
-                    <option value="professional">Professional</option>
-                    <option value="engaging">Engaging</option>
-                    <option value="casual">Casual</option>
-                    <option value="inspirational">Inspirational</option>
+                    <option value="neutral" className="bg-[#111111]">Neutral</option>
+                    <option value="professional" className="bg-[#111111]">Professional</option>
+                    <option value="engaging" className="bg-[#111111]">Engaging</option>
+                    <option value="casual" className="bg-[#111111]">Casual</option>
+                    <option value="inspirational" className="bg-[#111111]">Inspirational</option>
                   </select>
                 </div>
 
@@ -269,18 +328,18 @@ export default function ContentOptimizer() {
                     id="preserve"
                     checked={preserveMeaning}
                     onChange={(e) => setPreserveMeaning(e.target.checked)}
-                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                    className="w-4 h-4 rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-emerald-500"
                   />
-                  <label htmlFor="preserve" className="text-sm text-gray-700">
+                  <label htmlFor="preserve" className="text-sm" style={{ color: '#d1d5db' }}>
                     Preserve original meaning (conservative optimization)
                   </label>
                 </div>
               </div>
 
               {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-800">{error}</p>
+                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm" style={{ color: '#fca5a5' }}>{error}</p>
                 </div>
               )}
 
@@ -289,7 +348,8 @@ export default function ContentOptimizer() {
                 <button
                   onClick={analyzeContent}
                   disabled={analyzing || !content.trim()}
-                  className="bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+                  className="bg-white/10 py-3 rounded-lg font-semibold hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all border border-white/10"
+                  style={{ color: '#ffffff' }}
                 >
                   {analyzing ? (
                     <>
@@ -307,7 +367,7 @@ export default function ContentOptimizer() {
                 <button
                   onClick={optimizeContent}
                   disabled={loading || !content.trim() || !keywords.trim()}
-                  className="bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-lg"
+                  className="bg-emerald-500 text-black py-3 rounded-lg font-semibold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
                 >
                   {loading ? (
                     <>
@@ -322,26 +382,30 @@ export default function ContentOptimizer() {
                   )}
                 </button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Analysis Results */}
             {analysis && (
-              <div className="bg-white rounded-2xl shadow-xl p-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#111111] rounded-2xl border border-white/10 p-6 md:p-8"
+              >
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#ffffff' }}>
                   Content Analysis
                 </h3>
 
                 {/* Scores */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <p className="text-sm text-blue-600 font-medium">SEO Score</p>
-                    <p className="text-3xl font-bold text-blue-900 mt-1">
+                  <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/30">
+                    <p className="text-sm" style={{ color: '#60a5fa' }}>SEO Score</p>
+                    <p className="text-3xl font-bold mt-1" style={{ color: '#ffffff' }}>
                       {analysis.seo_score}/100
                     </p>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <p className="text-sm text-green-600 font-medium">GEO Score</p>
-                    <p className="text-3xl font-bold text-green-900 mt-1">
+                  <div className="bg-emerald-500/10 rounded-xl p-4 border border-emerald-500/30">
+                    <p className="text-sm" style={{ color: '#34d399' }}>GEO Score</p>
+                    <p className="text-3xl font-bold mt-1" style={{ color: '#ffffff' }}>
                       {analysis.geo_score}/100
                     </p>
                   </div>
@@ -349,23 +413,23 @@ export default function ContentOptimizer() {
 
                 {/* Metrics */}
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Metrics:</h4>
+                  <h4 className="text-sm font-medium mb-3" style={{ color: '#9ca3af' }}>Metrics:</h4>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Words:</span>
-                      <span className="font-medium">{analysis.metrics.word_count}</span>
+                    <div className="flex justify-between p-2 bg-white/5 rounded-lg">
+                      <span style={{ color: '#9ca3af' }}>Words:</span>
+                      <span style={{ color: '#ffffff' }}>{analysis.metrics.word_count}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Sentences:</span>
-                      <span className="font-medium">{analysis.metrics.sentence_count}</span>
+                    <div className="flex justify-between p-2 bg-white/5 rounded-lg">
+                      <span style={{ color: '#9ca3af' }}>Sentences:</span>
+                      <span style={{ color: '#ffffff' }}>{analysis.metrics.sentence_count}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Paragraphs:</span>
-                      <span className="font-medium">{analysis.metrics.paragraph_count}</span>
+                    <div className="flex justify-between p-2 bg-white/5 rounded-lg">
+                      <span style={{ color: '#9ca3af' }}>Paragraphs:</span>
+                      <span style={{ color: '#ffffff' }}>{analysis.metrics.paragraph_count}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Reading Time:</span>
-                      <span className="font-medium">{analysis.metrics.reading_time_minutes} min</span>
+                    <div className="flex justify-between p-2 bg-white/5 rounded-lg">
+                      <span style={{ color: '#9ca3af' }}>Reading Time:</span>
+                      <span style={{ color: '#ffffff' }}>{analysis.metrics.reading_time_minutes} min</span>
                     </div>
                   </div>
                 </div>
@@ -373,7 +437,7 @@ export default function ContentOptimizer() {
                 {/* Issues */}
                 {analysis.seo_issues.length > 0 && (
                   <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">SEO Issues:</h4>
+                    <h4 className="text-sm font-medium mb-3" style={{ color: '#9ca3af' }}>SEO Issues:</h4>
                     <div className="space-y-2">
                       {analysis.seo_issues.slice(0, 5).map((issue, idx) => (
                         <div
@@ -391,36 +455,40 @@ export default function ContentOptimizer() {
                 {/* Suggestions */}
                 {analysis.suggestions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Suggestions:</h4>
+                    <h4 className="text-sm font-medium mb-3" style={{ color: '#9ca3af' }}>Suggestions:</h4>
                     <ul className="space-y-2">
                       {analysis.suggestions.map((suggestion, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
-                          <ArrowRight className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                          <span>{suggestion}</span>
+                        <li key={idx} className="flex items-start gap-2 text-sm">
+                          <ArrowRight className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                          <span style={{ color: '#d1d5db' }}>{suggestion}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
-              </div>
+              </motion.div>
             )}
           </div>
 
           {/* Results Section */}
           <div>
             {result && (
-              <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
                 {/* Score Improvements */}
                 <div className="grid grid-cols-2 gap-4">
                   {result.seo_score_before !== undefined && result.seo_score_after !== undefined && (
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-                      <p className="text-sm font-medium text-gray-600">SEO Score</p>
+                    <div className="bg-[#111111] rounded-xl border border-white/10 p-5">
+                      <p className="text-sm" style={{ color: '#9ca3af' }}>SEO Score</p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-2xl font-bold text-gray-400">
+                        <span className="text-xl font-bold" style={{ color: '#6b7280' }}>
                           {result.seo_score_before}
                         </span>
-                        <ArrowRight className="w-5 h-5 text-green-600" />
-                        <span className="text-3xl font-bold text-green-600">
+                        <ArrowRight className="w-5 h-5 text-emerald-400" />
+                        <span className="text-2xl font-bold" style={{ color: '#34d399' }}>
                           {result.seo_score_after}
                         </span>
                       </div>
@@ -428,14 +496,14 @@ export default function ContentOptimizer() {
                   )}
 
                   {result.geo_score_before !== undefined && result.geo_score_after !== undefined && (
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
-                      <p className="text-sm font-medium text-gray-600">GEO Score</p>
+                    <div className="bg-[#111111] rounded-xl border border-white/10 p-5">
+                      <p className="text-sm" style={{ color: '#9ca3af' }}>GEO Score</p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-2xl font-bold text-gray-400">
+                        <span className="text-xl font-bold" style={{ color: '#6b7280' }}>
                           {result.geo_score_before}
                         </span>
-                        <ArrowRight className="w-5 h-5 text-green-600" />
-                        <span className="text-3xl font-bold text-green-600">
+                        <ArrowRight className="w-5 h-5 text-emerald-400" />
+                        <span className="text-2xl font-bold" style={{ color: '#34d399' }}>
                           {result.geo_score_after}
                         </span>
                       </div>
@@ -445,25 +513,27 @@ export default function ContentOptimizer() {
 
                 {/* Tabs for SEO/GEO versions */}
                 {result.seo_optimized && result.geo_optimized && (
-                  <div className="bg-white rounded-2xl shadow-xl p-2">
+                  <div className="bg-[#111111] rounded-xl border border-white/10 p-2">
                     <div className="flex gap-2">
                       <button
                         onClick={() => setActiveTab('seo')}
-                        className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                        className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
                           activeTab === 'seo'
-                            ? 'bg-blue-600 text-white shadow-lg'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white/5 hover:bg-white/10'
                         }`}
+                        style={{ color: activeTab === 'seo' ? undefined : '#ffffff' }}
                       >
                         SEO Optimized
                       </button>
                       <button
                         onClick={() => setActiveTab('geo')}
-                        className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                        className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
                           activeTab === 'geo'
-                            ? 'bg-purple-600 text-white shadow-lg'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-purple-500 text-white'
+                            : 'bg-white/5 hover:bg-white/10'
                         }`}
+                        style={{ color: activeTab === 'geo' ? undefined : '#ffffff' }}
                       >
                         GEO Optimized
                       </button>
@@ -472,61 +542,67 @@ export default function ContentOptimizer() {
                 )}
 
                 {/* Optimized Content */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-[#111111] rounded-2xl border border-white/10 p-6 md:p-8">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">
+                    <h3 className="text-xl font-bold" style={{ color: '#ffffff' }}>
                       {activeTab === 'seo' ? 'SEO Optimized' : 'GEO Optimized'} Content
                     </h3>
                     <button
                       onClick={() => copyToClipboard(activeTab)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                      className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg transition"
                     >
                       {copied === activeTab ? (
                         <>
-                          <Check className="w-4 h-4 text-green-600" />
-                          <span className="text-sm font-medium text-green-600">Copied!</span>
+                          <Check className="w-4 h-4 text-emerald-400" />
+                          <span className="text-sm font-medium" style={{ color: '#34d399' }}>Copied!</span>
                         </>
                       ) : (
                         <>
-                          <Copy className="w-4 h-4" />
-                          <span className="text-sm font-medium">Copy</span>
+                          <Copy className="w-4 h-4" style={{ color: '#9ca3af' }} />
+                          <span className="text-sm font-medium" style={{ color: '#9ca3af' }}>Copy</span>
                         </>
                       )}
                     </button>
                   </div>
 
-                  <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 whitespace-pre-wrap mb-6">
+                  <div className="p-5 bg-white/5 rounded-xl border border-white/10 whitespace-pre-wrap mb-6" style={{ color: '#e5e7eb' }}>
                     {activeTab === 'seo' ? result.seo_optimized : result.geo_optimized}
                   </div>
 
                   {/* Improvements */}
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    <h4 className="text-sm font-medium mb-3" style={{ color: '#9ca3af' }}>
                       What We Improved:
                     </h4>
                     <ul className="space-y-2">
-                      {(activeTab === 'seo' ? result.seo_improvements : result.geo_improvements)?.map((improvement, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
-                          <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                          <span>{improvement}</span>
-                        </li>
-                      ))}
+                      {(activeTab === 'seo' ? result.seo_improvements : result.geo_improvements)?.map(
+                        (improvement, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                            <span style={{ color: '#d1d5db' }}>{improvement}</span>
+                          </li>
+                        )
+                      )}
                     </ul>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {!result && !loading && (
-              <div className="bg-white rounded-2xl shadow-xl p-12 text-center h-full flex flex-col items-center justify-center">
-                <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 mb-2">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="bg-[#111111] rounded-2xl border border-white/10 p-12 text-center h-full flex flex-col items-center justify-center min-h-[400px]"
+              >
+                <Zap className="w-16 h-16 mx-auto mb-4" style={{ color: '#374151' }} />
+                <p style={{ color: '#9ca3af' }} className="mb-2">
                   Paste your content and click optimize
                 </p>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm" style={{ color: '#6b7280' }}>
                   We'll transform it into SEO & GEO optimized content
                 </p>
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
