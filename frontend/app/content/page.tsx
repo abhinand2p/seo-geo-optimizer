@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   FileText, Sparkles, Loader2, AlertCircle, Copy, Check,
-  Menu, X
 } from 'lucide-react';
+import AppHeader from '@/components/AppHeader';
 import { API_BASE_URL } from '@/lib/config';
 
 interface Tone {
@@ -46,7 +45,6 @@ export default function ContentGenerator() {
   const [result, setResult] = useState<ContentResponse | null>(null);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [tones, setTones] = useState<Tone[]>([]);
   const [seoTypes, setSeoTypes] = useState<ContentType[]>([]);
@@ -138,63 +136,7 @@ export default function ContentGenerator() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple-500/10 rounded-full blur-[150px]" />
       </div>
 
-      {/* Header */}
-      <header className="relative z-10 border-b border-white/10 bg-[#050505]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center group-hover:bg-emerald-400 transition-colors">
-                <Sparkles className="w-5 h-5 text-black" />
-              </div>
-              <span className="text-lg font-semibold" style={{ color: '#ffffff' }}>
-                SEO<span style={{ color: '#34d399' }}>&</span>GEO
-              </span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href="/" className="text-sm hover:text-emerald-400 transition-colors" style={{ color: '#d1d5db' }}>
-                Home
-              </Link>
-              <Link href="/keywords" className="text-sm hover:text-emerald-400 transition-colors" style={{ color: '#d1d5db' }}>
-                Keywords
-              </Link>
-              <Link href="/content" className="text-sm transition-colors" style={{ color: '#34d399' }}>
-                Content
-              </Link>
-              <Link href="/optimizer" className="text-sm hover:text-emerald-400 transition-colors" style={{ color: '#d1d5db' }}>
-                Optimizer
-              </Link>
-              <Link href="/audit" className="text-sm px-4 py-2 bg-emerald-500 text-black font-medium rounded-lg hover:bg-emerald-400 transition-colors">
-                Site Audit
-              </Link>
-            </nav>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-10 h-10 flex items-center justify-center"
-              style={{ color: '#ffffff' }}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 space-y-3 border-t border-white/10 mt-4">
-              <Link href="/" className="block py-2" style={{ color: '#ffffff' }}>Home</Link>
-              <Link href="/keywords" className="block py-2" style={{ color: '#ffffff' }}>Keywords</Link>
-              <Link href="/content" className="block py-2" style={{ color: '#34d399' }}>Content</Link>
-              <Link href="/optimizer" className="block py-2" style={{ color: '#ffffff' }}>Optimizer</Link>
-              <Link href="/audit" className="block py-2 px-4 bg-emerald-500 text-black font-medium rounded-lg text-center">
-                Site Audit
-              </Link>
-            </div>
-          )}
-        </div>
-      </header>
+      <AppHeader activeRoute="content" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title */}

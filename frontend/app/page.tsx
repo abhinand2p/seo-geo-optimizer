@@ -77,6 +77,19 @@ export default function HomePage() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45, duration: 0.4 }}
+              >
+                <Link
+                  href="/dashboard"
+                  className="text-sm hover:text-emerald-400 transition-colors duration-300"
+                  style={{ color: '#e5e7eb' }}
+                >
+                  Dashboard
+                </Link>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.4 }}
               >
                 <Link
@@ -121,6 +134,14 @@ export default function HomePage() {
                     {item}
                   </a>
                 ))}
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block hover:text-emerald-400 transition-colors py-2"
+                  style={{ color: '#ffffff' }}
+                >
+                  Dashboard
+                </Link>
                 <Link
                   href="/audit"
                   onClick={() => setMobileMenuOpen(false)}
@@ -417,8 +438,16 @@ export default function HomePage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-5">
             {[
+              {
+                icon: BarChart3,
+                title: 'Dashboard',
+                description: 'SEO overview & insights',
+                href: '/dashboard',
+                badge: null,
+                glow: 'from-emerald-500/30 to-emerald-500/0'
+              },
               {
                 icon: Search,
                 title: 'Keywords',
