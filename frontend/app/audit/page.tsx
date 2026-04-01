@@ -5,7 +5,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import {
   Globe, Loader2, AlertCircle, CheckCircle, TrendingUp,
-  FileText, AlertTriangle, Info, BarChart3
+  FileText, AlertTriangle, Info, BarChart3, Sparkles
 } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import { API_BASE_URL } from '@/lib/config';

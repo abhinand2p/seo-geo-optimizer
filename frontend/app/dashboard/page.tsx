@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   BarChart3, Search, FileText, Zap, CheckCircle, Circle,
-  TrendingUp, Lightbulb, ArrowRight, ChevronRight, Bot, Globe
+  TrendingUp, Lightbulb, ArrowRight, ChevronRight, Bot, Globe, Loader2
 } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Activity {
   id: string;
@@ -43,9 +45,18 @@ function timeAgo(ts: number): string {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [checklist, setChecklist] = useState<Checklist>(defaultChecklist);
   const [activity, setActivity] = useState<Activity[]>([]);
   const [keywordsCount, setKeywordsCount] = useState(0);
+
+  // Client-side auth guard (middleware handles server-side)
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/login?redirect=/dashboard');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     try {
@@ -91,6 +102,15 @@ export default function DashboardPage() {
     competitor: Globe,
     export: TrendingUp,
   };
+
+  // Show spinner while checking auth
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050505]">
