@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
 
@@ -10,20 +10,10 @@ class UserRegister(BaseModel):
     password: str = Field(min_length=8)
     full_name: Optional[str] = None
 
-    @field_validator('password')
-    @classmethod
-    def truncate_password(cls, v: str) -> str:
-        return v[:72]
-
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
-
-    @field_validator('password')
-    @classmethod
-    def truncate_password(cls, v: str) -> str:
-        return v[:72]
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -33,11 +23,6 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str = Field(min_length=8)
-
-    @field_validator('new_password')
-    @classmethod
-    def truncate_password(cls, v: str) -> str:
-        return v[:72]
 
 
 # ─── Response schemas ─────────────────────────────────────────────────────────
@@ -65,10 +50,6 @@ class MessageResponse(BaseModel):
 
 
 class ForgotPasswordResponse(BaseModel):
-    """
-    Returns the reset token directly (no email configured yet).
-    The frontend shows the reset link to the user on-screen.
-    """
     message: str
     reset_token: str
     reset_url: str

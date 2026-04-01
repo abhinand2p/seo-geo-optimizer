@@ -6,19 +6,21 @@ from app.core.config import settings
 import secrets
 import random
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__truncate_error=False,  # silently truncate at 72 bytes instead of raising
+)
+
+def _truncate(password: str) -> bytes:
+    """Encode to UTF-8 and hard-truncate at 72 bytes (bcrypt's limit)."""
+    return password.encode("utf-8")[:72]
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against a hash"""
-    # Truncate to 72 bytes for bcrypt
-    plain_password = plain_password[:72]
-    return pwd_context.verify(plain_password, hashed_password)
+    return pwd_context.verify(_truncate(plain_password), hashed_password)
 
 def get_password_hash(password: str) -> str:
-    """Hash a password"""
-    # Truncate to 72 bytes for bcrypt
-    password = password[:72]
-    return pwd_context.hash(password)
+    return pwd_context.hash(_truncate(password))
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token"""
