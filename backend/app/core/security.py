@@ -1,51 +1,41 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
 from app.core.config import settings
 import secrets
-import random
 
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto",
-    bcrypt__truncate_error=False,  # silently truncate at 72 bytes instead of raising
+# Argon2id hasher — OWASP-recommended parameters
+_ph = PasswordHasher(
+    time_cost=3,        # iterations
+    memory_cost=65536,  # 64 MB
+    parallelism=4,
+    hash_len=32,
+    salt_len=16,
+    encoding="utf-8",   # handles any unicode password natively — no byte-limit issue
 )
 
-def _truncate(password: str) -> bytes:
-    """Encode to UTF-8 and hard-truncate at 72 bytes (bcrypt's limit)."""
-    return password.encode("utf-8")[:72]
+def get_password_hash(password: str) -> str:
+    return _ph.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(_truncate(plain_password), hashed_password)
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(_truncate(password))
+    try:
+        return _ph.verify(hashed_password, plain_password)
+    except (VerifyMismatchError, VerificationError, InvalidHashError):
+        return False
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Create JWT access token"""
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 def decode_token(token: str) -> Optional[dict]:
-    """Decode JWT token"""
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        return payload
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:
         return None
 
 def generate_verification_token() -> str:
-    """Generate a random verification token"""
     return secrets.token_urlsafe(32)
-
-def generate_otp() -> str:
-    """Generate 6-digit OTP"""
-    return str(random.randint(100000, 999999))
